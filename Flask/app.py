@@ -1,10 +1,8 @@
 from flask import Flask, render_template, request
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import load_model
-# import numpy as np
 import pandas as pd
 
-# import math
 
 
 app = Flask(__name__)
@@ -18,7 +16,7 @@ def index():
 @app.route('/loan_predict')
 def loan_predict():
     model = load_model('loan.h5')
-    # sc = MinMaxScaler()
+
     Gender = request.args.get('Gender')
     Married = request.args.get('Married')
     Dependents = request.args.get('Dependents', type=float)
@@ -54,28 +52,6 @@ def loan_predict():
                   'Property_Area_Urban': [1 if Property_Area =="Urban" else 0]
                   }
 
-        # inputs = np.array(
-        #     [[Gender, Married, Dependents, Education, Self_Employed, ApplicantIncome, CoapplicantIncome, LoanAmount,
-        #      Loan_Amount_Term, Credit_History, Property_Area]]).reshape(-1, 1)
-
-        # inputs = {'Gender':[Gender],
-        #     'Married':[Married],
-        #     'Dependents':[Dependents],
-        #     'Education':[Education],
-        #     'Self_Employed':[Self_Employed],
-        #     'ApplicantIncome':[ApplicantIncome],
-        #     'CoapplicantIncome':[CoapplicantIncome],
-        #     'LoanAmount':[LoanAmount],
-        #     'Loan_Amount_Term':[Loan_Amount_Term],
-        #     'Credit_History':[Credit_History],
-        #     'Property_Area':[Property_Area]}
-
-
-        # df = pd.DataFrame(inputs,
-        #                   columns=['Gender', 'Married', 'Dependents', 'Education', 'Self_Employed', 'ApplicantIncome',
-        #                            'CoapplicantIncome', 'LoanAmount', 'Loan_Amount_Term', 'Credit_History',
-        #                            'Property_Area'])
-        inputs = pd.DataFrame(inputs)
         print(inputs)
 
         sc = MinMaxScaler()
@@ -83,15 +59,11 @@ def loan_predict():
         final_features = sc.fit_transform(inputs)
         print(final_features)
 
-        #
+        
         prediction = model.predict(final_features)
         prediction = (prediction>0.58)
 
-        # X=pd.read_excel('Test_loan.xlsx')
-        # X_test = sc.fit_transform(X)
-        # y_pred = model.predict(X_test)
-        # y_pred = (y_pred>0.58)
-        # output = round(prediction[0], 2)
+
         return render_template('loan_predict.html', p_text="Prediction : " + ("Approved" if prediction[0] else "Not Approved"))
     return render_template('loan_predict.html')
 
